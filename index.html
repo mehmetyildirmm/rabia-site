@@ -220,10 +220,12 @@ section{padding-block:96px}
 .qty input{width:70px;height:46px;border:0;border-inline:1px solid var(--ink);text-align:center;font:500 18px var(--sans);background:transparent;color:var(--ink)}
 .hint{font-size:13px;color:var(--muted);margin-top:10px}
 .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.tiers div{border:1px solid var(--line);padding:10px;text-align:center;font-size:12px;letter-spacing:.08em;color:var(--muted);background:var(--cream)}
-.tiers div b{display:block;font:600 20px/1.2 var(--serif);color:var(--ink);letter-spacing:0}
-.tiers div.on{border-color:var(--gold);background:#fff}
-.tiers div.on b{color:var(--gold)}
+.tiers>*{border:1px solid var(--line);padding:10px;text-align:center;font:400 12px/1.4 var(--sans);letter-spacing:.08em;color:var(--muted);background:var(--cream)}
+.tiers button{cursor:pointer;transition:border-color .15s}
+.tiers button:hover{border-color:var(--gold)}
+.tiers>* b{display:block;font:600 20px/1.2 var(--serif);color:var(--ink);letter-spacing:0}
+.tiers>*.on{border-color:var(--gold);background:#fff}
+.tiers>*.on b{color:var(--gold)}
 .sum-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:10px}
 .sum-row span:first-child{color:var(--muted);letter-spacing:.06em}
 .total{margin-top:auto;display:grid;gap:4px}
@@ -592,7 +594,8 @@ function renderCfg(){
     document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{S.len=b.dataset.l;renderCfg();});}
   const c=p.price[S.color], arr=p.lens?c[S.len]:c.x, ti=tierIdx(S.qty);
   const flat=arr[0]===arr[2];
-  $("tiers").innerHTML=flat?`<div class="on" style="grid-column:1/-1">${T[L].noLen}<b>${eur(arr[0])}${T[L].perkg}</b></div>`:arr.map((v,i)=>`<div class="${i===ti?"on":""}">${T[L].tier[i]}<b>${eur(v)}</b></div>`).join("");
+  $("tiers").innerHTML=flat?`<div class="on" style="grid-column:1/-1">${T[L].noLen}<b>${eur(arr[0])}${T[L].perkg}</b></div>`:arr.map((v,i)=>`<button type="button" data-ti="${i}" class="${i===ti?"on":""}">${T[L].tier[i]}<b>${eur(v)}</b></button>`).join("");
+  document.querySelectorAll("[data-ti]").forEach(b=>b.onclick=()=>{S.qty=[1,5,10][+b.dataset.ti];renderCfg();});
   $("qty").value=S.qty;
   const u=unit();
   $("sProd").textContent=p.name; $("sColor").textContent=COLORS[S.color][L]; $("sLen").textContent=S.len+" "+T[L].len;
