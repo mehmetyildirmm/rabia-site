@@ -130,6 +130,17 @@ header{position:sticky;top:0;z-index:40;background:rgba(247,242,234,.92);backdro
 .rcard small svg{color:var(--gold)}
 @media (prefers-reduced-motion:reduce){.rview{overflow-x:auto}.rtrack{animation:none}}
 
+/* hero v4: full-bleed photo */
+.hero{display:block;position:relative;min-height:690px;overflow:hidden}
+.hero-copy{position:relative;z-index:2;max-width:calc(44% + 60px);min-height:690px}
+.hero h1{font-size:clamp(42px,4.8vw,72px)}
+.hero-facts{gap:22px}
+.hero-art{position:absolute;top:0;right:0;bottom:0;width:58%;min-height:0;background:var(--cream)}
+.hero-art::after{display:none}
+.hero-img{object-position:30% 32%;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24%);mask-image:linear-gradient(90deg,transparent 0,#000 24%)}
+.badge{color:var(--gold-2);right:4%;top:auto;bottom:110px}
+@media (max-width:900px){.hero{min-height:0}.hero-copy{min-height:0;max-width:none}.hero-art{position:relative;width:100%;aspect-ratio:4/3;max-height:none}.hero-img{-webkit-mask-image:none;mask-image:none;object-position:30% 30%}}
+
 /* showcase */
 .show{background:var(--paper);border-block:1px solid var(--line)}
 .showgrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:start}
@@ -548,7 +559,7 @@ function renderProducts(){
   $("products").innerHTML=Object.entries(P).map(([k,p])=>{
     const min=Math.min(...Object.values(p.price).flatMap(o=>Object.values(o).flat()));
     return `<button type="button" class="prod ${S.prod===k?"on":""}" data-p="${k}">
-      <div class="sw" style="background:${k==="genius"?COLORS.bb.g:k==="butterfly"?COLORS.bl.g:k==="sdouble"?COLORS.om.g:"linear-gradient(135deg,#3a2519,#8a6a45)"}"><span class="tag">${p.tag[L]}</span></div>
+      <div class="sw" style="background:#2a211a url(t-${({genius:"dark",butterfly:"blonde",sdouble:"balayage",classic:"ash"})[k]}.jpg) center/cover"><span class="tag">${p.tag[L]}</span></div>
       <div class="body"><h3>${p.name}</h3><p>${p.d[L]}</p><div class="from">${T[L].from}<b>${eur(min)}</b>${T[L].perkg}</div></div></button>`}).join("");
   document.querySelectorAll(".prod").forEach(b=>b.onclick=()=>{S.prod=b.dataset.p;if(P[S.prod].lens&&!P[S.prod].lens.includes(S.len))S.len=P[S.prod].lens[0];renderProducts();renderCfg();$("config").scrollIntoView({behavior:"smooth",block:"nearest"});});
 }
