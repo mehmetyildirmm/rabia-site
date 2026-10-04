@@ -80,6 +80,20 @@ header{position:sticky;top:0;z-index:40;background:rgba(247,242,234,.92);backdro
 .hero-card small{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2);margin-bottom:6px}
 @media (max-width:900px){.hero{grid-template-columns:1fr}.hero-copy{padding:56px 20px}.hero-art{min-height:380px}}
 
+/* hero visual */
+.hero-silk{position:absolute;inset:0;overflow:hidden;background:radial-gradient(120% 80% at 82% 8%,rgba(212,178,122,.30),transparent 55%),radial-gradient(90% 70% at 8% 92%,rgba(176,138,78,.24),transparent 60%),linear-gradient(160deg,#1c1713,#0f0c0a 60%,#211911)}
+.hero-silk::after{content:"";position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 42%,rgba(232,204,154,.16) 50%,transparent 58%);animation:sheen 9s ease-in-out infinite}
+@keyframes sheen{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
+@media (prefers-reduced-motion:reduce){.hero-silk::after{animation:none}}
+.hero-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.hero-mark{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#F3E7D3;padding:40px}
+.hero-mark::before{content:"";position:absolute;inset:28px;border:1px solid rgba(212,178,122,.32);pointer-events:none}
+.hero-mark span{font:italic 500 clamp(40px,5vw,74px)/1.02 var(--serif)}
+.hero-mark span+span{font-style:normal}
+.hero-mark small{margin-top:20px;font:500 11px/1 var(--sans);letter-spacing:.5em;color:var(--gold-2)}
+.hero-cap{position:absolute;left:52px;bottom:50px;font:500 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--gold-2)}
+.about-list-t{display:block;margin-bottom:16px}
+
 /* marquee */
 .ticker{background:var(--black);color:var(--gold-2);overflow:hidden;white-space:nowrap;border-block:1px solid #2a231b}
 .ticker div{display:inline-block;padding:14px 0;animation:tick 40s linear infinite;font:500 13px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase}
@@ -268,11 +282,8 @@ footer .logo b{color:#EFE4D2}
       </div>
     </div>
     <div class="hero-art">
-      <canvas class="strands" id="strands" aria-hidden="true"></canvas>
-      <div class="hero-card">
-        <div><small data-i="hc1">Bahçelievler Salon</small><b data-i="hc2">Mikro, Needle, Butterfly & Bant kaynak, renklendirme</b></div>
-        <a class="btn gold" href="#randevu" data-i="h4">Randevu Al</a>
-      </div>
+      <div class="hero-silk" aria-hidden="true"></div>
+      <div class="hero-mark"><span>Rabia</span><span>Aliefendioğlu</span><small>HAIR · ISTANBUL</small></div>
     </div>
   </div>
 
@@ -356,11 +367,15 @@ footer .logo b{color:#EFE4D2}
         <p class="quote" style="margin-top:18px" data-i="a1">“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”</p>
         <p data-i="a2">İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.</p>
       </div>
-      <div class="steps">
-        <div><i>01</i><div><b data-i="st1">Ücretsiz saç analizi</b><span data-i="st1s">Saç yapınıza uygun ürün ve yöntemi birlikte seçelim.</span></div></div>
-        <div><i>02</i><div><b data-i="st2">Renk eşleştirme</b><span data-i="st2s">Kendi renginize birebir uyan tonu belirleyelim.</span></div></div>
-        <div><i>03</i><div><b data-i="st3">Uygulama</b><span data-i="st3s">Uzman ekibimiz kaynağı titizlikle uygulasın.</span></div></div>
-        <div><i>04</i><div><b data-i="st4">Bakım & takip</b><span data-i="st4s">Bakım randevularıyla saçınız ilk günkü gibi kalsın.</span></div></div>
+      <div>
+        <span class="eyebrow about-list-t" data-i="sv0">Hizmetlerimiz</span>
+        <div class="steps">
+        <div><i>01</i><div><b data-i="st1">Mikro Kaynak</b><span data-i="st1s">İnce saçlar için fark edilmeyen mikro bağlantı.</span></div></div>
+        <div><i>02</i><div><b data-i="st2">Needle Kaynak</b><span data-i="st2s">Görünmez, doğal geçişli iğne kaynak.</span></div></div>
+        <div><i>03</i><div><b data-i="st3">Butterfly Kaynak</b><span data-i="st3s">Hafif ve esnek kanat yapılı kaynak.</span></div></div>
+        <div><i>04</i><div><b data-i="st4">Bant Kaynak</b><span data-i="st4s">Hızlı uygulanan, düz duran bant kaynak.</span></div></div>
+        <div><i>05</i><div><b data-i="st5">Renklendirme</b><span data-i="st5s">Saçınıza ve kaynağınıza uyumlu profesyonel renk.</span></div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -420,9 +435,9 @@ const SVC = [
   {id:"rn",tr:["Renklendirme","Saçınıza ve kaynağınıza uyumlu profesyonel renklendirme"],en:["Coloring","Professional coloring matched to your hair and extensions"]}
 ];
 const T = {
-  tr:{demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler Salon",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Bahçelievler Salon",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",st1:"Ücretsiz saç analizi",st1s:"Saç yapınıza uygun ürün ve yöntemi birlikte seçelim.",st2:"Renk eşleştirme",st2s:"Kendi renginize birebir uyan tonu belirleyelim.",st3:"Uygulama",st3s:"Uzman ekibimiz kaynağı titizlikle uygulasın.",st4:"Bakım & takip",st4s:"Bakım randevularıyla saçınız ilk günkü gibi kalsın.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Siparişi WhatsApp'tan Gönder",d3:"Havale/EFT",d4:"WhatsApp sipariş onayı",
+  tr:{demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler · İstanbul",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Bahçelievler Salon",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",sv0:"Hizmetlerimiz",st1:"Mikro Kaynak",st1s:"İnce saçlar için fark edilmeyen mikro bağlantı.",st2:"Needle Kaynak",st2s:"Görünmez, doğal geçişli iğne kaynak.",st3:"Butterfly Kaynak",st3s:"Hafif ve esnek kanat yapılı kaynak.",st4:"Bant Kaynak",st4s:"Hızlı uygulanan, düz duran bant kaynak.",st5:"Renklendirme",st5s:"Saçınıza ve kaynağınıza uyumlu profesyonel renk.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Siparişi WhatsApp'tan Gönder",d3:"Havale/EFT",d4:"WhatsApp sipariş onayı",
     from:"başlayan fiyat",perkg:"/kg",dur:"dk",days:["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"],months:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],pickDay:"Önce bir gün seçin",slotsFor:"için uygun saatler",closed:"Pazar günleri kapalıyız",n:"Ad Soyad",t:"Telefon",added:"Sepete eklendi",empty:"Sepetiniz boş",remove:"Kaldır",needAll:"Hizmet, gün, saat, ad ve telefon gerekli",ok:"<b>WhatsApp açıldı.</b> Hazır mesajı gönderin, randevunuzu oradan onaylayalım.",pay:"Örnek sitede ödeme yapılmaz. Gerçek sitede bu buton iyzico güvenli ödeme sayfasını açar.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Tek fiyat"},
-  en:{demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler Salon",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Bahçelievler Salon",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us on WhatsApp and we confirm availability the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",st1:"Free consultation",st1s:"We choose the right product and method for your hair together.",st2:"Shade matching",st2s:"We find the tone that matches your own colour exactly.",st3:"Application",st3s:"Our expert team applies your extensions with care.",st4:"Care & follow-up",st4s:"Maintenance visits keep your hair looking like day one.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order on WhatsApp",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
+  en:{demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler · İstanbul",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Bahçelievler Salon",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us on WhatsApp and we confirm availability the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",sv0:"Our Services",st1:"Micro Extension",st1s:"Discreet micro-link application for fine hair.",st2:"Weft Extension",st2s:"Invisible sewn-in weft with a natural blend.",st3:"Butterfly Extension",st3s:"Light, flexible butterfly weft.",st4:"Tape-in Extension",st4s:"Quick, flat-lying tape-in application.",st5:"Coloring",st5s:"Professional color matched to your hair and extensions.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order on WhatsApp",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
     from:"from",perkg:"/kg",dur:"min",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],pickDay:"Pick a day first",slotsFor:"available times",closed:"We're closed on Sundays",n:"Full name",t:"Phone",added:"Added to cart",empty:"Your cart is empty",remove:"Remove",needAll:"Service, day, time, name and phone are required",ok:"<b>WhatsApp opened.</b> Send the prepared message and we will confirm your booking there.",pay:"No payment is taken in this preview. On the live site this button opens the secure iyzico checkout.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Single price"}
 };
 let L="tr";
@@ -531,31 +546,6 @@ function applyLang(){
   if(!$("bok").hidden)$("bok").innerHTML=T[L].ok;
 }
 $("lTR").onclick=()=>{L="tr";applyLang();};$("lEN").onclick=()=>{L="en";applyLang();};
-
-// hero strands
-(function(){
-  const c=$("strands"),x=c.getContext("2d");let w,h,t=0;
-  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const lines=Array.from({length:120},(_,i)=>({o:i/120,a:Math.random()*6.28,s:.4+Math.random()*.8,hue:Math.random()}));
-  function size(){w=c.width=c.offsetWidth*devicePixelRatio;h=c.height=c.offsetHeight*devicePixelRatio;}
-  function draw(){
-    x.fillStyle="#141110";x.fillRect(0,0,w,h);
-    lines.forEach(l=>{
-      x.beginPath();
-      const bx=w*(.05+l.o*.95);
-      for(let yy=-20;yy<=h+20;yy+=12*devicePixelRatio){
-        const k=yy/h;
-        const xx=bx+Math.sin(k*3.2+l.a+t*l.s*.4)*w*.05*(.4+k)+k*k*w*.12;
-        yy<0?x.moveTo(xx,yy):x.lineTo(xx,yy);
-      }
-      const g=x.createLinearGradient(0,0,0,h);
-      g.addColorStop(0,"rgba(40,26,18,.9)");g.addColorStop(.55,l.hue>.5?"rgba(120,82,48,.8)":"rgba(70,46,30,.8)");g.addColorStop(1,l.hue>.35?"rgba(214,178,122,.9)":"rgba(160,118,70,.8)");
-      x.strokeStyle=g;x.lineWidth=(1+l.hue*1.6)*devicePixelRatio;x.stroke();
-    });
-    if(!reduce){t+=.012;requestAnimationFrame(draw);}
-  }
-  size();addEventListener("resize",size);draw();
-})();
 
 applyLang();
 </script>
