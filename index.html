@@ -94,6 +94,31 @@ header{position:sticky;top:0;z-index:40;background:rgba(247,242,234,.92);backdro
 .hero-cap{position:absolute;left:52px;bottom:50px;font:500 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--gold-2)}
 .about-list-t{display:block;margin-bottom:16px}
 
+/* hero video */
+.hero-art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,16,.10),rgba(20,17,16,0) 35%,rgba(20,17,16,.38));pointer-events:none}
+
+/* showcase */
+.show{background:var(--paper);border-block:1px solid var(--line)}
+.showgrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:start}
+.tabs{display:grid;gap:0;border-top:1px solid var(--line)}
+.tab{display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:20px 4px;cursor:pointer;font:600 26px/1.15 var(--serif);color:var(--muted);transition:color .2s,padding .2s}
+.tab small{font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:0;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);padding-left:16px;box-shadow:inset 3px 0 0 var(--gold)}
+.tab.on small{opacity:1}
+.panel{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:30px;align-items:center;background:var(--cream);border:1px solid var(--line);padding:22px}
+.pmedia{position:relative;aspect-ratio:9/16;background:var(--black);overflow:hidden}
+.pmedia video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--black)}
+.pmedia .ph{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:24px;color:#F3E7D3;background:radial-gradient(120% 80% at 82% 8%,rgba(212,178,122,.30),transparent 55%),linear-gradient(160deg,#1c1713,#0f0c0a 60%,#211911)}
+.pmedia .ph b{font:italic 500 34px/1.1 var(--serif)}
+.pmedia .ph small{margin-top:14px;font:500 10px/1 var(--sans);letter-spacing:.4em;color:var(--gold-2)}
+.ptext{display:grid;gap:16px;align-content:center}
+.ptext h3{font-size:clamp(30px,3.2vw,44px);font-weight:500}
+.ptext p{color:var(--muted);font-weight:300;max-width:42ch}
+.ptext .btn{justify-self:start}
+@media (max-width:980px){.showgrid{grid-template-columns:1fr}.tabs{display:flex;overflow-x:auto;border-top:0;gap:8px;padding-bottom:6px}.tab{flex:none;font:500 14px/1 var(--sans);letter-spacing:.06em;border:1px solid var(--line);padding:12px 16px;border-radius:2px}.tab small{display:none}.tab.on{padding-left:16px;box-shadow:none;background:var(--ink);color:var(--cream);border-color:var(--ink)}}
+@media (max-width:620px){.panel{grid-template-columns:1fr;padding:16px}.pmedia{max-width:320px;width:100%;margin-inline:auto}}
+
 /* marquee */
 .ticker{background:var(--black);color:var(--gold-2);overflow:hidden;white-space:nowrap;border-block:1px solid #2a231b}
 .ticker div{display:inline-block;padding:14px 0;animation:tick 40s linear infinite;font:500 13px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase}
@@ -251,6 +276,7 @@ footer .logo b{color:#EFE4D2}
     <a class="logo" href="#top"><b>Rabia Aliefendioğlu</b><small>HAIR · ISTANBUL</small></a>
     <nav class="menu">
       <a href="#urunler" data-i="m1">Ürünler</a>
+      <a href="#uygulamalar" data-i="m5">Uygulamalar</a>
       <a href="#randevu" data-i="m2">Randevu</a>
       <a href="#hakkimizda" data-i="m3">Hakkımızda</a>
       <a href="#iletisim" data-i="m4">İletişim</a>
@@ -278,17 +304,16 @@ footer .logo b{color:#EFE4D2}
       <div class="hero-facts">
         <div><b>%100</b><span data-i="f1">İnsan saçı</span></div>
         <div><b>3</b><span data-i="f2">Günde kargo</span></div>
-        <div><b>12,2B</b><span data-i="f3">Instagram takipçi</span></div><div><b>🇳🇱 🇩🇪 🇬🇧 🇨🇦</b><span data-i="f4">Müşteri ülkeleri</span></div>
+        <div><b data-i="f3n">12,2B</b><span data-i="f3">Instagram takipçi</span></div><div><b>🇳🇱 🇩🇪 🇬🇧 🇨🇦</b><span data-i="f4">Müşteri ülkeleri</span></div>
       </div>
     </div>
     <div class="hero-art">
-      <div class="hero-silk" aria-hidden="true"></div>
-      <div class="hero-mark"><span>Rabia</span><span>Aliefendioğlu</span><small>HAIR · ISTANBUL</small></div>
+      <video class="hero-vid" autoplay muted loop playsinline preload="auto" poster="m-hero.jpg" aria-hidden="true"><source src="m-hero.mp4" type="video/mp4"></video>
     </div>
   </div>
 
   <div class="ticker"><div>
-    <span data-i="t1">Worldwide Shipping</span><i>✦</i><span>Genius Weft</span><i>✦</i><span>Butterfly Weft</span><i>✦</i><span>Super Double</span><i>✦</i><span data-i="t2">Toptan Fiyat Avantajı</span><i>✦</i><span data-i="t1">Worldwide Shipping</span><i>✦</i><span>Genius Weft</span><i>✦</i><span>Butterfly Weft</span><i>✦</i><span>Super Double</span><i>✦</i><span data-i="t2">Toptan Fiyat Avantajı</span><i>✦</i>
+    <span data-i="tk1">Mikro Kaynak</span><i>✦</i><span data-i="tk2">Needle Kaynak</span><i>✦</i><span data-i="tk3">Butterfly Kaynak</span><i>✦</i><span data-i="tk4">Bant Kaynak</span><i>✦</i><span data-i="tk5">Renklendirme</span><i>✦</i><span data-i="tk6">Dünyaya Gönderim</span><i>✦</i><span data-i="tk1">Mikro Kaynak</span><i>✦</i><span data-i="tk2">Needle Kaynak</span><i>✦</i><span data-i="tk3">Butterfly Kaynak</span><i>✦</i><span data-i="tk4">Bant Kaynak</span><i>✦</i><span data-i="tk5">Renklendirme</span><i>✦</i><span data-i="tk6">Dünyaya Gönderim</span><i>✦</i>
   </div></div>
 
   <!-- PRODUCTS -->
@@ -330,11 +355,25 @@ footer .logo b{color:#EFE4D2}
     </div>
   </section>
 
+  <!-- SHOWCASE -->
+  <section class="show" id="uygulamalar">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="eyebrow" data-i="w0">Uygulamalarımız</span><h2 data-i="w1">Salonumuzda yaptığımız işlemler</h2></div>
+        <p data-i="w2">Bir işlem seçin, nasıl uygulandığını ve sonucu görün.</p>
+      </div>
+      <div class="showgrid">
+        <div class="tabs" id="tabs" role="tablist"></div>
+        <div class="panel" id="panel"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- BOOKING -->
   <section class="salon" id="randevu">
     <div class="wrap">
       <div class="head">
-        <div><span class="eyebrow" data-i="b0">Bahçelievler Salon</span><h2 data-i="b1">Online randevu alın</h2></div>
+        <div><span class="eyebrow" data-i="b0">Salon Randevusu</span><h2 data-i="b1">Online randevu alın</h2></div>
         <p data-i="b2">Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.</p>
       </div>
       <div class="book">
@@ -428,20 +467,20 @@ const P = {
     price:{bb:{"55-60":[800,750,700],"65-70":[900,850,800]},bl:{"55-60":[900,850,800],"65-70":[1000,950,900]},om:{"55-60":[950,900,850],"65-70":[1050,1000,950]}}}
 };
 const SVC = [
-  {id:"mk",tr:["Mikro Kaynak","İnce saçlar için mikro bağlantılı, fark edilmeyen uygulama"],en:["Micro Extension","Discreet micro-link application for fine hair"]},
-  {id:"nd",tr:["Needle Kaynak","Görünmez, doğal geçişli iğne kaynak uygulaması"],en:["Weft Extension","Invisible sewn-in weft application with a natural blend"]},
-  {id:"bf",tr:["Butterfly Kaynak","Hafif, esnek kanat yapılı kaynak uygulaması"],en:["Butterfly Extension","Light, flexible butterfly weft application"]},
-  {id:"bt",tr:["Bant Kaynak","Hızlı uygulanan, düz duran bant kaynak"],en:["Tape-in Extension","Quick, flat-lying tape-in application"]},
-  {id:"rn",tr:["Renklendirme","Saçınıza ve kaynağınıza uyumlu profesyonel renklendirme"],en:["Coloring","Professional coloring matched to your hair and extensions"]}
+  {id:"mk",tr:["Mikro Kaynak","İnce saçlar için mikro bağlantılı, fark edilmeyen uygulama","İnce bağlantılarla uygulanan, saç diplerinde fark edilmeyen kaynak yöntemi. İnce telli saçlar için idealdir."],en:["Micro Extension","Discreet micro-link application for fine hair","Applied with fine micro links that stay hidden at the roots. Ideal for fine hair."]},
+  {id:"nd",v:"needle",tr:["Needle Kaynak","Görünmez, doğal geçişli iğne kaynak uygulaması","İnce bağlantılarla uygulanan, saçta daha doğal ve zarif bir görünüm sunan kaynak yöntemi."],en:["Weft Extension","Invisible sewn-in weft application with a natural blend","Applied with fine attachments for a more natural, elegant look."]},
+  {id:"bf",v:"butterfly",tr:["Butterfly Kaynak","Hafif, esnek kanat yapılı kaynak uygulaması","Hafif ve esnek yapısıyla gün boyu rahat kullanım sunan kaynak yöntemi. Dolgun ve doğal bir görünüm sağlar."],en:["Butterfly Extension","Light, flexible butterfly weft application","Light and flexible for all-day comfort, with a full, natural finish."]},
+  {id:"bt",tr:["Bant Kaynak","Hızlı uygulanan, düz duran bant kaynak","Saça düz ve yassı şekilde oturan bant kaynak. Hızlı uygulanır, saça hacim ve uzunluk kazandırır."],en:["Tape-in Extension","Quick, flat-lying tape-in application","Tape-in wefts that lie flat against the head. Quick to apply, adding volume and length."]},
+  {id:"rn",tr:["Renklendirme","Saçınıza ve kaynağınıza uyumlu profesyonel renklendirme","Saçınızın ve kaynağınızın birbirine tam uyması için profesyonel renklendirme ve ton eşitleme."],en:["Coloring","Professional coloring matched to your hair and extensions","Professional coloring and toning so your own hair and your extensions match perfectly."]}
 ];
 const T = {
-  tr:{demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler · İstanbul",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Bahçelievler Salon",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",sv0:"Hizmetlerimiz",st1:"Mikro Kaynak",st1s:"İnce saçlar için fark edilmeyen mikro bağlantı.",st2:"Needle Kaynak",st2s:"Görünmez, doğal geçişli iğne kaynak.",st3:"Butterfly Kaynak",st3s:"Hafif ve esnek kanat yapılı kaynak.",st4:"Bant Kaynak",st4s:"Hızlı uygulanan, düz duran bant kaynak.",st5:"Renklendirme",st5s:"Saçınıza ve kaynağınıza uyumlu profesyonel renk.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Siparişi WhatsApp'tan Gönder",d3:"Havale/EFT",d4:"WhatsApp sipariş onayı",
+  tr:{m5:"Uygulamalar",f3n:"12,2B",tk1:"Mikro Kaynak",tk2:"Needle Kaynak",tk3:"Butterfly Kaynak",tk4:"Bant Kaynak",tk5:"Renklendirme",tk6:"Dünyaya Gönderim",w0:"Uygulamalarımız",w1:"Salonumuzda yaptığımız işlemler",w2:"Bir işlem seçin, nasıl uygulandığını ve sonucu görün.",wv:"Video",wb:"Bu işlem için randevu al",demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler · İstanbul",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Salon Randevusu",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",sv0:"Hizmetlerimiz",st1:"Mikro Kaynak",st1s:"İnce saçlar için fark edilmeyen mikro bağlantı.",st2:"Needle Kaynak",st2s:"Görünmez, doğal geçişli iğne kaynak.",st3:"Butterfly Kaynak",st3s:"Hafif ve esnek kanat yapılı kaynak.",st4:"Bant Kaynak",st4s:"Hızlı uygulanan, düz duran bant kaynak.",st5:"Renklendirme",st5s:"Saçınıza ve kaynağınıza uyumlu profesyonel renk.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Siparişi WhatsApp'tan Gönder",d3:"Havale/EFT",d4:"WhatsApp sipariş onayı",
     from:"başlayan fiyat",perkg:"/kg",dur:"dk",days:["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"],months:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],pickDay:"Önce bir gün seçin",slotsFor:"için uygun saatler",closed:"Pazar günleri kapalıyız",n:"Ad Soyad",t:"Telefon",added:"Sepete eklendi",empty:"Sepetiniz boş",remove:"Kaldır",needAll:"Hizmet, gün, saat, ad ve telefon gerekli",ok:"<b>WhatsApp açıldı.</b> Hazır mesajı gönderin, randevunuzu oradan onaylayalım.",pay:"Örnek sitede ödeme yapılmaz. Gerçek sitede bu buton iyzico güvenli ödeme sayfasını açar.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Tek fiyat"},
-  en:{demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler · İstanbul",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Bahçelievler Salon",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us on WhatsApp and we confirm availability the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",sv0:"Our Services",st1:"Micro Extension",st1s:"Discreet micro-link application for fine hair.",st2:"Weft Extension",st2s:"Invisible sewn-in weft with a natural blend.",st3:"Butterfly Extension",st3s:"Light, flexible butterfly weft.",st4:"Tape-in Extension",st4s:"Quick, flat-lying tape-in application.",st5:"Coloring",st5s:"Professional color matched to your hair and extensions.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order on WhatsApp",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
+  en:{m5:"Our Work",f3n:"12.2K",tk1:"Micro Extension",tk2:"Weft Extension",tk3:"Butterfly Extension",tk4:"Tape-in Extension",tk5:"Coloring",tk6:"Worldwide Shipping",w0:"Our Work",w1:"Treatments we do at our salon",w2:"Choose a treatment to see how it is applied and the result.",wv:"Video",wb:"Book this treatment",demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler · İstanbul",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Salon Appointments",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us on WhatsApp and we confirm availability the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",sv0:"Our Services",st1:"Micro Extension",st1s:"Discreet micro-link application for fine hair.",st2:"Weft Extension",st2s:"Invisible sewn-in weft with a natural blend.",st3:"Butterfly Extension",st3s:"Light, flexible butterfly weft.",st4:"Tape-in Extension",st4s:"Quick, flat-lying tape-in application.",st5:"Coloring",st5s:"Professional color matched to your hair and extensions.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order on WhatsApp",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
     from:"from",perkg:"/kg",dur:"min",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],pickDay:"Pick a day first",slotsFor:"available times",closed:"We're closed on Sundays",n:"Full name",t:"Phone",added:"Added to cart",empty:"Your cart is empty",remove:"Remove",needAll:"Service, day, time, name and phone are required",ok:"<b>WhatsApp opened.</b> Send the prepared message and we will confirm your booking there.",pay:"No payment is taken in this preview. On the live site this button opens the secure iyzico checkout.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Single price"}
 };
 let L="tr";
-const S={prod:"sdouble",color:"bb",len:"55-60",qty:1,cart:[],svc:"mk",day:null,slot:null,view:new Date()};
+const S={prod:"sdouble",color:"bb",len:"55-60",qty:1,cart:[],svc:"mk",show:"bf",day:null,slot:null,view:new Date()};
 S.view.setDate(1);
 const $=id=>document.getElementById(id);
 const eur=n=>"€"+n.toLocaleString(L==="tr"?"tr-TR":"en-GB");
@@ -536,13 +575,23 @@ $("bform").onsubmit=e=>{e.preventDefault();
   window.open("https://wa.me/905384158053?text="+encodeURIComponent(msg),"_blank","noopener");
   $("bok").innerHTML=T[L].ok;$("bok").hidden=false;};
 
+// showcase
+function renderShow(){
+  $("tabs").innerHTML=SVC.map(s=>`<button type="button" role="tab" aria-selected="${S.show===s.id}" class="tab ${S.show===s.id?"on":""}" data-w="${s.id}"><span>${s[L][0]}</span>${s.v?`<small>${T[L].wv}</small>`:""}</button>`).join("");
+  document.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{S.show=b.dataset.w;renderShow();});
+  const s=SVC.find(x=>x.id===S.show);
+  const media=s.v?`<video controls playsinline preload="none" poster="m-${s.v}.jpg"><source src="m-${s.v}.mp4" type="video/mp4"></video>`:`<div class="ph"><b>${s[L][0]}</b><small>RABIA ALIEFENDIOĞLU</small></div>`;
+  $("panel").innerHTML=`<div class="pmedia">${media}</div><div class="ptext"><h3>${s[L][0]}</h3><p>${s[L][2]}</p><button class="btn gold" type="button" id="wbook">${T[L].wb}</button></div>`;
+  $("wbook").onclick=()=>{S.svc=s.id;renderSvc();renderSum();$("randevu").scrollIntoView({behavior:"smooth"});};
+}
+
 // i18n
 function applyLang(){
   document.documentElement.lang=L;
   document.querySelectorAll("[data-i]").forEach(el=>{const v=T[L][el.dataset.i];if(v==null)return;if(el.hasAttribute("data-html"))el.innerHTML=v;else el.textContent=v;});
   document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=T[L][el.dataset.ph]);
   $("lTR").classList.toggle("on",L==="tr");$("lEN").classList.toggle("on",L==="en");
-  renderProducts();renderCfg();renderCart();renderSvc();renderCal();
+  renderProducts();renderCfg();renderCart();renderSvc();renderCal();renderShow();
   if(!$("bok").hidden)$("bok").innerHTML=T[L].ok;
 }
 $("lTR").onclick=()=>{L="tr";applyLang();};$("lEN").onclick=()=>{L="en";applyLang();};
