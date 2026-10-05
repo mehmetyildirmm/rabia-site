@@ -321,6 +321,9 @@ footer .logo b{color:#EFE4D2}
 .item .p{text-align:right;font:600 20px var(--serif);font-variant-numeric:tabular-nums}
 .item .p button{display:block;margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;font-family:var(--sans)}
 .dr-f{padding:22px 24px;border-top:1px solid var(--line);display:grid;gap:14px}
+.ofields{display:grid;gap:8px}.ofields input{width:100%;border:1px solid var(--line);background:#fff;padding:11px 12px;font:400 15px var(--sans)}.ofields input:focus{outline:none;border-color:var(--gold)}
+.onote{font-size:13.5px;line-height:1.5;border:1px solid var(--gold);padding:12px 14px;background:#fff}.onote a{color:inherit;font-weight:600;text-decoration:underline}
+.okmsg a{color:var(--gold-2);font-weight:600;text-decoration:underline}
 .dr-f .t{display:flex;justify-content:space-between;font:600 26px var(--serif)}
 .pay{display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .pay span{border:1px solid var(--line);padding:6px 9px}
@@ -532,12 +535,51 @@ footer .logo b{color:#EFE4D2}
   <div class="dr-b" id="items"></div>
   <div class="dr-f">
     <div class="t"><span data-i="s3">Toplam</span><span id="dTotal">€0</span></div>
-    <button class="btn" id="checkout" type="button" data-i="d2">Siparişi WhatsApp'tan Gönder</button>
+    <div class="ofields"><input id="oName" data-ph="on" placeholder="Ad Soyad" autocomplete="name"><input id="oPhone" data-ph="op" placeholder="Telefon / WhatsApp" inputmode="tel" autocomplete="tel"><input id="oCountry" data-ph="oc" placeholder="Ülke / Şehir" autocomplete="country-name"></div>
+    <button class="btn" id="checkout" type="button" data-i="d2">Sipariş Talebi Gönder</button>
+    <div class="onote" id="onote" hidden></div>
     <div class="pay"><span data-i="d3">Havale/EFT</span><span data-i="d4">WhatsApp sipariş onayı</span></div>
   </div>
 </aside>
 <div class="toast" id="toast" hidden></div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* canli veri katmani (Firebase Firestore) - panel ile ayni proje */
+const RA=(function(){
+  const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const phone=p=>{p=String(p||"").replace(/\D/g,"");if(p.startsWith("0"))p="9"+p;else if(p.length===10)p="90"+p;return p.slice(0,20)};
+  const base={ymd,phone,T:{},on:false,S:{times:["10:00","11:00","12:00","13:30","14:30","15:30","16:30","17:30","18:30"],closedWeekdays:[0],closed:[]}};
+  let db=null;
+  try{
+    firebase.initializeApp({apiKey:"AIzaSyCxpn3sjiIrhdqzaiFMHHJ0DSRgypyuEG0",authDomain:"rabia-aliefendioglu.firebaseapp.com",projectId:"rabia-aliefendioglu",storageBucket:"rabia-aliefendioglu.firebasestorage.app",messagingSenderId:"627472096954",appId:"1:627472096954:web:0121b6945e4822f110ac83"});
+    db=firebase.firestore();base.on=true;
+  }catch(e){}
+  const ts=()=>firebase.firestore.FieldValue.serverTimestamp();
+  const no=()=>Promise.reject(new Error("offline"));
+  return Object.assign(base,{
+    async loadSettings(){if(!db)return;try{const d=await db.doc("settings/main").get();if(d.exists)Object.assign(this.S,d.data())}catch(e){}},
+    async taken(date){
+      if(!db)return [];
+      const id=firebase.firestore.FieldPath.documentId();
+      const q=await db.collection("slots").where(id,">=",date+"_").where(id,"<",date+"_~").get();
+      return q.docs.map(d=>d.id.split("_")[1]);
+    },
+    book(b){
+      if(!db)return no();
+      const ref=db.collection("bookings").doc(),slot=b.date+"_"+b.time,batch=db.batch();
+      batch.set(ref,{name:b.name.slice(0,80),phone:phone(b.phone),svc:b.svc,date:b.date,time:b.time,status:"bekliyor",note:(b.note||"").slice(0,300),src:"site",slot,created:ts()});
+      batch.set(db.doc("slots/"+slot),{b:ref.id});
+      return batch.commit();
+    },
+    order(o){
+      if(!db)return no();
+      return db.collection("orders").add({name:o.name.slice(0,80),phone:phone(o.phone),country:(o.country||"").slice(0,60),note:(o.note||"").slice(0,300),items:o.items,total:o.total,status:"yeni",cargo:"",src:"site",created:ts()});
+    }
+  });
+})();
+</script>
 <script>
 const COLORS = {
   bb:{tr:"Siyah & Kahve",en:"Black & Brown",g:"linear-gradient(135deg,#0d0a08,#3a2519 60%,#1a120d)"},
@@ -563,10 +605,10 @@ const SVC = [
   {id:"rn",p:"renk",tr:["Renklendirme","Saçınıza ve kaynağınıza uyumlu profesyonel renklendirme","Saçınızın ve kaynağınızın birbirine tam uyması için profesyonel renklendirme ve ton eşitleme."],en:["Coloring","Professional coloring matched to your hair and extensions","Professional coloring and toning so your own hair and your extensions match perfectly."]}
 ];
 const T = {
-  tr:{pl0:"Fiyat Listesi",pl1:"Tüm fiyatlar 1 kg içindir, Euro (€).",v0:"Salonumuzdan",v1:"Videolarımız",v2:"Salonumuzdan ve müşterilerimizden videolar.",r0:"Yorumlar",r1:"Müşterilerimiz ne diyor",r2:"Instagram gönderilerimize yazılan gerçek müşteri yorumları.",rsrc:"Instagram yorumu",bdg:"%100 GERÇEK İNSAN SAÇI ✦ DÜNYAYA GÖNDERİM ✦ ",m5:"Uygulamalar",f3n:"13,1B",tk1:"Mikro Kaynak",tk2:"Needle Kaynak",tk3:"Butterfly Kaynak",tk4:"Bant Kaynak",tk5:"Renklendirme",tk6:"Dünyaya Gönderim",w0:"Uygulamalarımız",w1:"Salonumuzda yaptığımız işlemler",w2:"Bir işlem seçin, detayını görün.",wv:"Video",wb:"Bu işlem için randevu al",demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler · İstanbul",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Salon Randevusu",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz WhatsApp'tan bize ulaşır, uygunluğu aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",sv0:"Hizmetlerimiz",st1:"Mikro Kaynak",st1s:"İnce saçlar için fark edilmeyen mikro bağlantı.",st2:"Needle Kaynak",st2s:"Görünmez, doğal geçişli iğne kaynak.",st3:"Butterfly Kaynak",st3s:"Hafif ve esnek kanat yapılı kaynak.",st4:"Bant Kaynak",st4s:"Hızlı uygulanan, düz duran bant kaynak.",st5:"Renklendirme",st5s:"Saçınıza ve kaynağınıza uyumlu profesyonel renk.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Siparişi WhatsApp'tan Gönder",d3:"Havale/EFT",d4:"WhatsApp sipariş onayı",
-    from:"başlayan fiyat",perkg:"/kg",dur:"dk",days:["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"],months:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],pickDay:"Önce bir gün seçin",slotsFor:"için uygun saatler",closed:"Pazar günleri kapalıyız",n:"Ad Soyad",t:"Telefon",added:"Sepete eklendi",empty:"Sepetiniz boş",remove:"Kaldır",needAll:"Hizmet, gün, saat, ad ve telefon gerekli",ok:"<b>WhatsApp açıldı.</b> Hazır mesajı gönderin, randevunuzu oradan onaylayalım.",pay:"Örnek sitede ödeme yapılmaz. Gerçek sitede bu buton iyzico güvenli ödeme sayfasını açar.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Tek fiyat"},
-  en:{pl0:"Price List",pl1:"All prices are per 1 kg, in euros (€).",v0:"From Our Salon",v1:"Our videos",v2:"Videos from our salon and our clients.",r0:"Reviews",r1:"What our clients say",r2:"Real client comments left on our Instagram posts.",rsrc:"Instagram comment",bdg:"100% REAL HUMAN HAIR ✦ WORLDWIDE SHIPPING ✦ ",m5:"Our Work",f3n:"13.1K",tk1:"Micro Extension",tk2:"Weft Extension",tk3:"Butterfly Extension",tk4:"Tape-in Extension",tk5:"Coloring",tk6:"Worldwide Shipping",w0:"Our Work",w1:"Treatments we do at our salon",w2:"Choose a treatment to see the details.",wv:"Video",wb:"Book this treatment",demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler · İstanbul",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Salon Appointments",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us on WhatsApp and we confirm availability the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",sv0:"Our Services",st1:"Micro Extension",st1s:"Discreet micro-link application for fine hair.",st2:"Weft Extension",st2s:"Invisible sewn-in weft with a natural blend.",st3:"Butterfly Extension",st3s:"Light, flexible butterfly weft.",st4:"Tape-in Extension",st4s:"Quick, flat-lying tape-in application.",st5:"Coloring",st5s:"Professional color matched to your hair and extensions.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order on WhatsApp",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
-    from:"from",perkg:"/kg",dur:"min",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],pickDay:"Pick a day first",slotsFor:"available times",closed:"We're closed on Sundays",n:"Full name",t:"Phone",added:"Added to cart",empty:"Your cart is empty",remove:"Remove",needAll:"Service, day, time, name and phone are required",ok:"<b>WhatsApp opened.</b> Send the prepared message and we will confirm your booking there.",pay:"No payment is taken in this preview. On the live site this button opens the secure iyzico checkout.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Single price"}
+  tr:{pl0:"Fiyat Listesi",pl1:"Tüm fiyatlar 1 kg içindir, Euro (€).",v0:"Salonumuzdan",v1:"Videolarımız",v2:"Salonumuzdan ve müşterilerimizden videolar.",r0:"Yorumlar",r1:"Müşterilerimiz ne diyor",r2:"Instagram gönderilerimize yazılan gerçek müşteri yorumları.",rsrc:"Instagram yorumu",bdg:"%100 GERÇEK İNSAN SAÇI ✦ DÜNYAYA GÖNDERİM ✦ ",m5:"Uygulamalar",f3n:"13,1B",tk1:"Mikro Kaynak",tk2:"Needle Kaynak",tk3:"Butterfly Kaynak",tk4:"Bant Kaynak",tk5:"Renklendirme",tk6:"Dünyaya Gönderim",w0:"Uygulamalarımız",w1:"Salonumuzda yaptığımız işlemler",w2:"Bir işlem seçin, detayını görün.",wv:"Video",wb:"Bu işlem için randevu al",demo1:"ÖRNEK TASARIM",demo2:"Müşteri sunumu içindir. Fiyatlar örnek olarak alınmıştır, ödeme ve randevu gerçek işlem yapmaz.",m1:"Ürünler",m2:"Randevu",m3:"Hakkımızda",m4:"İletişim",h0:"%100 Gerçek İnsan Saçı",h1:"Saçınızda <em>doğal</em> güzellik, dünyaya kapımızdan",h2:"Premium kaynak saçları dünyanın her yerine gönderiyoruz. Bahçelievler salonumuzda ise uzman ekibimizle kaynak uygulamasını yapıyoruz.",h3:"Saç Satın Al",h4:"Randevu Al",f1:"İnsan saçı",f2:"Günde kargo",f3:"Instagram takipçi",f4:"Müşteri ülkeleri",hc1:"Bahçelievler · İstanbul",hc2:"Mikro, Needle, Butterfly & Bant kaynak, renklendirme",t1:"Dünyaya Gönderim",t2:"Toptan Fiyat Avantajı",p0:"Koleksiyon",p1:"Saçınızı seçin, fiyatı anında görün",p2:"Ürün, renk, uzunluk ve kilogram seçin. Alacağınız miktar arttıkça kilogram fiyatı otomatik düşer.",c1:"Renk",c2:"Uzunluk",c3:"Miktar (kg)",s1:"Ürün",s2:"Kg fiyatı",s3:"Toplam",s4:"Kargo ve gümrük ülkeye göre hesaplanır.",s5:"Sepete Ekle",s6:"WhatsApp'tan Teklif Al",k1:"Premium kalite",k1s:"Kalın ve dolgun uçlar",k2:"Uzun ömürlü",k2s:"Doğru bakımla yıllarca kullanım",k3:"3 günde kargo",k3s:"Dünyanın her yerine",k4:"Güvenli paket",k4s:"Sigortalı ve özenli teslimat",b0:"Salon Randevusu",b1:"Online randevu alın",b2:"Hizmeti, günü ve saati seçin. Talebiniz anında bize ulaşır, WhatsApp üzerinden aynı gün onaylarız.",b3:"Randevu Talebi Gönder",a0:"Hakkımızda",a1:"“Her müşterimize kendi saçı gibi doğal duran, uzun ömürlü bir sonuç sunuyoruz.”",a2:"İstanbul Bahçelievler'deki salonumuzda saç uygulaması yapıyor, %100 gerçek insan saçını toptan ve perakende olarak dünyanın dört bir yanına gönderiyoruz.",sv0:"Hizmetlerimiz",st1:"Mikro Kaynak",st1s:"İnce saçlar için fark edilmeyen mikro bağlantı.",st2:"Needle Kaynak",st2s:"Görünmez, doğal geçişli iğne kaynak.",st3:"Butterfly Kaynak",st3s:"Hafif ve esnek kanat yapılı kaynak.",st4:"Bant Kaynak",st4s:"Hızlı uygulanan, düz duran bant kaynak.",st5:"Renklendirme",st5s:"Saçınıza ve kaynağınıza uyumlu profesyonel renk.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Hızlı iletişim",ct2s:"Sipariş ve randevu için yazın",ct3s:"Uygulama örnekleri ve yorumlar",ft:"© 2026 Rabia Aliefendioğlu Hair · Tasarım: Mehmet Yıldırım Digital",d1:"Sepetim",d2:"Sipariş Talebi Gönder",on:"Ad Soyad",op:"Telefon / WhatsApp",oc:"Ülke / Şehir",ordNeed:"Ad, telefon ve ülke bilgisi gerekli",ordOk:"<b>Sipariş talebiniz bize ulaştı.</b> Ödeme ve kargo için WhatsApp üzerinden sizi arayacağız. Dilerseniz siz de <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">WhatsApp'tan yazabilirsiniz</a>.",ordFail:"Bağlantı kurulamadı. Lütfen siparişinizi <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">WhatsApp'tan gönderin</a>.",taken:"Bu saat az önce doldu, lütfen başka bir saat seçin.",load:"Saatler yükleniyor…",bFail:"Bağlantı kurulamadı. Lütfen randevu talebinizi <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">WhatsApp'tan gönderin</a>.",d3:"Havale/EFT",d4:"WhatsApp onayı",
+    from:"başlayan fiyat",perkg:"/kg",dur:"dk",days:["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"],months:["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],pickDay:"Önce bir gün seçin",slotsFor:"için uygun saatler",closed:"Pazar günleri kapalıyız",n:"Ad Soyad",t:"Telefon",added:"Sepete eklendi",empty:"Sepetiniz boş",remove:"Kaldır",needAll:"Hizmet, gün, saat, ad ve telefon gerekli",ok:"<b>Randevu talebiniz bize ulaştı.</b> En kısa sürede WhatsApp üzerinden onaylayacağız. Dilerseniz siz de <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">WhatsApp'tan yazabilirsiniz</a>.",pay:"Örnek sitede ödeme yapılmaz. Gerçek sitede bu buton iyzico güvenli ödeme sayfasını açar.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Tek fiyat"},
+  en:{pl0:"Price List",pl1:"All prices are per 1 kg, in euros (€).",v0:"From Our Salon",v1:"Our videos",v2:"Videos from our salon and our clients.",r0:"Reviews",r1:"What our clients say",r2:"Real client comments left on our Instagram posts.",rsrc:"Instagram comment",bdg:"100% REAL HUMAN HAIR ✦ WORLDWIDE SHIPPING ✦ ",m5:"Our Work",f3n:"13.1K",tk1:"Micro Extension",tk2:"Weft Extension",tk3:"Butterfly Extension",tk4:"Tape-in Extension",tk5:"Coloring",tk6:"Worldwide Shipping",w0:"Our Work",w1:"Treatments we do at our salon",w2:"Choose a treatment to see the details.",wv:"Video",wb:"Book this treatment",demo1:"DESIGN PREVIEW",demo2:"For client presentation only. Prices are sample data; checkout and booking do not process real transactions.",m1:"Shop",m2:"Book",m3:"About",m4:"Contact",h0:"100% Real Human Hair",h1:"Natural beauty for your hair, <em>shipped</em> worldwide",h2:"We ship premium hair extensions all over the world, and our expert team applies them at our Bahçelievler salon in Istanbul.",h3:"Shop Hair",h4:"Book Now",f1:"Human hair",f2:"Day dispatch",f3:"Instagram followers",f4:"Client countries",hc1:"Bahçelievler · İstanbul",hc2:"Micro, Weft, Butterfly & Tape-in extensions, coloring",t1:"Worldwide Shipping",t2:"Wholesale Pricing",p0:"Collection",p1:"Choose your hair, see the price instantly",p2:"Pick product, shade, length and weight. The per-kg price drops automatically as your order grows.",c1:"Shade",c2:"Length",c3:"Quantity (kg)",s1:"Product",s2:"Price per kg",s3:"Total",s4:"Shipping and customs calculated by country.",s5:"Add to Cart",s6:"Get a Quote on WhatsApp",k1:"Premium quality",k1s:"Thick, full ends",k2:"Long lasting",k2s:"Years of wear with proper care",k3:"3-day dispatch",k3s:"To anywhere in the world",k4:"Secure packaging",k4s:"Insured, careful delivery",b0:"Salon Appointments",b1:"Book online",b2:"Choose a service, day and time. Your request reaches us instantly and we confirm on WhatsApp the same day.",b3:"Send Booking Request",a0:"About",a1:"“Every client leaves with a natural, long-lasting result that looks like their own hair.”",a2:"At our Bahçelievler, Istanbul salon we apply extensions, and we ship 100% real human hair wholesale and retail to clients around the world.",sv0:"Our Services",st1:"Micro Extension",st1s:"Discreet micro-link application for fine hair.",st2:"Weft Extension",st2s:"Invisible sewn-in weft with a natural blend.",st3:"Butterfly Extension",st3s:"Light, flexible butterfly weft.",st4:"Tape-in Extension",st4s:"Quick, flat-lying tape-in application.",st5:"Coloring",st5s:"Professional color matched to your hair and extensions.",ct1:"Salon",ct1s:"Şirinevler Mah. Mareşal Fevzi Çakmak Cad. No: 6 İç Kapı No: 21, Şirinevler Meydan",ct2:"Quick contact",ct2s:"Message us for orders and bookings",ct3s:"Results and client reviews",ft:"© 2026 Rabia Aliefendioğlu Hair · Design: Mehmet Yıldırım Digital",d1:"Your Cart",d2:"Send Order Request",on:"Full name",op:"Phone / WhatsApp",oc:"Country / City",ordNeed:"Name, phone and country are required",ordOk:"<b>We have received your order request.</b> We will contact you on WhatsApp for payment and shipping. You can also <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">message us on WhatsApp</a>.",ordFail:"Connection failed. Please <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">send your order on WhatsApp</a>.",taken:"This time was just booked, please pick another.",load:"Loading times…",bFail:"Connection failed. Please <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">send your booking request on WhatsApp</a>.",d3:"Bank transfer",d4:"Order confirmed on WhatsApp",
+    from:"from",perkg:"/kg",dur:"min",days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],months:["January","February","March","April","May","June","July","August","September","October","November","December"],pickDay:"Pick a day first",slotsFor:"available times",closed:"We're closed on Sundays",n:"Full name",t:"Phone",added:"Added to cart",empty:"Your cart is empty",remove:"Remove",needAll:"Service, day, time, name and phone are required",ok:"<b>We have received your booking request.</b> We will confirm it on WhatsApp shortly. You can also <a target=\"_blank\" rel=\"noopener\" href=\"{wa}\">message us on WhatsApp</a>.",pay:"No payment is taken in this preview. On the live site this button opens the secure iyzico checkout.",tier:["1-5 kg","5-10 kg","10+ kg"],len:"cm",noLen:"Single price"}
 };
 let L="tr";
 const S={prod:"sdouble",color:"bb",len:"55-60",qty:1,cart:[],svc:"mk",show:"mk",day:null,slot:null,view:new Date()};
@@ -604,7 +646,7 @@ function renderCfg(){
 $("qm").onclick=()=>{S.qty=Math.max(1,S.qty-1);renderCfg();};
 $("qp").onclick=()=>{S.qty=Math.min(100,S.qty+1);renderCfg();};
 $("qty").oninput=e=>{const v=parseInt(e.target.value,10);if(v>=1){S.qty=Math.min(100,v);renderCfg();}};
-$("addCart").onclick=()=>{const p=P[S.prod];S.cart.push({p:S.prod,c:S.color,l:p.lens?S.len:null,q:S.qty,u:unit()});renderCart();toast(T[L].added);};
+$("addCart").onclick=()=>{$("onote").hidden=true;const p=P[S.prod];S.cart.push({p:S.prod,c:S.color,l:p.lens?S.len:null,q:S.qty,u:unit()});renderCart();toast(T[L].added);};
 $("waQuote").onclick=()=>{const p=P[S.prod];$("waQuote").href="https://wa.me/905384158053?text="+encodeURIComponent(`${p.name} · ${COLORS[S.color][L]}${p.lens?" · "+S.len+" cm":""} · ${S.qty} kg`);};
 
 function renderCart(){
@@ -620,10 +662,17 @@ $("openCart").onclick=()=>openD(true);$("closeCart").onclick=()=>openD(false);$(
 const WA="905384158053";
 $("checkout").onclick=()=>{
   if(!S.cart.length)return;
+  const n=$("oName").value.trim(),ph=$("oPhone").value.trim(),c=$("oCountry").value.trim();
+  if(!n||ph.replace(/\D/g,"").length<7||!c){toast(T[L].ordNeed);return;}
   const lines=S.cart.map((it,i)=>`${i+1}) ${P[it.p].name} · ${COLORS[it.c][L]}${it.l?" · "+it.l+" cm":""} · ${it.q} kg · ${eur(it.u*it.q)}`);
   const head=L==="tr"?"Merhaba, sipariş vermek istiyorum:":"Hello, I would like to place an order:";
-  const tot=(L==="tr"?"Toplam: ":"Total: ")+eur(S.cart.reduce((s,i)=>s+i.u*i.q,0));
-  window.open("https://wa.me/"+WA+"?text="+encodeURIComponent([head,...lines,tot].join("\n")),"_blank","noopener");
+  const total=S.cart.reduce((s,i)=>s+i.u*i.q,0);
+  const tot=(L==="tr"?"Toplam: ":"Total: ")+eur(total);
+  const wa="https://wa.me/"+WA+"?text="+encodeURIComponent([head,...lines,tot,n+" · "+c].join("\n"));
+  const b=$("checkout"),note=$("onote");b.disabled=true;note.hidden=true;
+  RA.order({name:n,phone:ph,country:c,items:S.cart.map(it=>({t:P[it.p].name+" · "+COLORS[it.c].tr+(it.l?" · "+it.l+" cm":""),q:it.q,u:it.u})),total})
+   .then(()=>{S.cart=[];renderCart();note.innerHTML=T[L].ordOk.replace("{wa}",wa);note.hidden=false;})
+   .catch(()=>{note.innerHTML=T[L].ordFail.replace("{wa}",wa);note.hidden=false;b.disabled=false;});
 };
 
 // booking
@@ -636,7 +685,7 @@ function renderCal(){
   $("mon").textContent=T[L].months[m]+" "+y;
   const first=(new Date(y,m,1).getDay()+6)%7, n=new Date(y,m+1,0).getDate();
   let h=T[L].days.map(d=>`<div class="dn">${d}</div>`).join("")+"<div></div>".repeat(first);
-  for(let d=1;d<=n;d++){const dt=new Date(y,m,d);const off=dt<today||dt.getDay()===0;const on=S.day&&+S.day===+dt;
+  for(let d=1;d<=n;d++){const dt=new Date(y,m,d);const off=dt<today||RA.S.closedWeekdays.includes(dt.getDay())||RA.S.closed.includes(RA.ymd(dt));const on=S.day&&+S.day===+dt;
     h+=`<button type="button" class="day ${on?"on":""}" data-d="${d}" ${off?"disabled":""}>${d}</button>`;}
   $("days").innerHTML=h;
   document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{S.day=new Date(y,m,+b.dataset.d);S.slot=null;renderCal();});
@@ -645,9 +694,10 @@ function renderCal(){
 function renderSlots(){
   if(!S.day){$("slotTitle").textContent=T[L].pickDay;$("slots").innerHTML="";renderSum();return;}
   $("slotTitle").textContent=S.day.toLocaleDateString(L==="tr"?"tr-TR":"en-GB",{day:"numeric",month:"long",weekday:"long"})+" "+T[L].slotsFor;
-  const times=["10:00","11:00","12:00","13:30","14:30","15:30","16:30","17:30","18:30"];
-  const seed=S.day.getDate();
-  $("slots").innerHTML=times.map((t,i)=>{const busy=false;return `<button type="button" class="slot ${S.slot===t?"on":""}" data-t="${t}" ${busy?"disabled":""}>${t}</button>`}).join("");
+  const times=RA.S.times,_k=RA.ymd(S.day);
+  if(!(_k in RA.T)){$("slots").innerHTML=`<span class="muted-s">${T[L].load}</span>`;RA.taken(_k).then(v=>{RA.T[_k]=v}).catch(()=>{RA.T[_k]=[]}).then(()=>{if(S.day&&RA.ymd(S.day)===_k)renderSlots()});renderSum();return;}
+  const _now=new Date(),_hm=String(_now.getHours()).padStart(2,"0")+":"+String(_now.getMinutes()).padStart(2,"0"),_isT=_k===RA.ymd(_now);
+  $("slots").innerHTML=times.map(t=>{const busy=RA.T[_k].includes(t)||(_isT&&t<=_hm);return `<button type="button" class="slot ${S.slot===t?"on":""}" data-t="${t}" ${busy?"disabled":""}>${t}</button>`}).join("");
   document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{S.slot=b.dataset.t;renderSlots();});
   renderSum();
 }
@@ -657,13 +707,22 @@ function renderSum(){
 }
 $("pm").onclick=()=>{const t=new Date();t.setDate(1);t.setHours(0,0,0,0);const p=new Date(S.view.getFullYear(),S.view.getMonth()-1,1);if(p>=t){S.view=p;renderCal();}};
 $("nm").onclick=()=>{S.view=new Date(S.view.getFullYear(),S.view.getMonth()+1,1);renderCal();};
+let BWA="";
 $("bform").onsubmit=e=>{e.preventDefault();
-  if(!S.day||!S.slot||!$("bn").value.trim()||!$("bt").value.trim()){toast(T[L].needAll);return;}
+  const nm=$("bn").value.trim(),tel=$("bt").value.trim();
+  if(!S.day||!S.slot||!nm||tel.replace(/\D/g,"").length<7){toast(T[L].needAll);return;}
   const sv=SVC.find(x=>x.id===S.svc)[L][0];
   const dt=S.day.toLocaleDateString(L==="tr"?"tr-TR":"en-GB",{day:"numeric",month:"long",weekday:"long"});
-  const msg=L==="tr"?`Merhaba, randevu almak istiyorum.\nHizmet: ${sv}\nTarih: ${dt}\nSaat: ${S.slot}\nAd Soyad: ${$("bn").value.trim()}\nTelefon: ${$("bt").value.trim()}`:`Hello, I would like to book an appointment.\nService: ${sv}\nDate: ${dt}\nTime: ${S.slot}\nName: ${$("bn").value.trim()}\nPhone: ${$("bt").value.trim()}`;
-  window.open("https://wa.me/905384158053?text="+encodeURIComponent(msg),"_blank","noopener");
-  $("bok").innerHTML=T[L].ok;$("bok").hidden=false;};
+  const msg=L==="tr"?`Merhaba, randevu almak istiyorum.\nHizmet: ${sv}\nTarih: ${dt}\nSaat: ${S.slot}\nAd Soyad: ${nm}\nTelefon: ${tel}`:`Hello, I would like to book an appointment.\nService: ${sv}\nDate: ${dt}\nTime: ${S.slot}\nName: ${nm}\nPhone: ${tel}`;
+  BWA="https://wa.me/"+WA+"?text="+encodeURIComponent(msg);
+  const _k=RA.ymd(S.day),_t=S.slot,_b=$("bsub"),ok=$("bok");_b.disabled=true;ok.hidden=true;
+  RA.book({name:nm,phone:tel,svc:S.svc,date:_k,time:_t})
+   .then(()=>{RA.T[_k]=(RA.T[_k]||[]).concat(_t);S.slot=null;ok.dataset.k="ok";ok.innerHTML=T[L].ok.replace("{wa}",BWA);ok.hidden=false;renderSlots();})
+   .catch(()=>RA.taken(_k).catch(()=>null).then(v=>{
+      if(v&&v.includes(_t)){RA.T[_k]=v;S.slot=null;toast(T[L].taken);renderSlots();}
+      else{ok.dataset.k="bFail";ok.innerHTML=T[L].bFail.replace("{wa}",BWA);ok.hidden=false;}
+   }))
+   .finally(()=>{_b.disabled=false;});};
 
 // showcase
 function renderShow(){
@@ -708,11 +767,12 @@ function applyLang(){
   document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=T[L][el.dataset.ph]);
   $("lTR").classList.toggle("on",L==="tr");$("lEN").classList.toggle("on",L==="en");
   renderProducts();renderCfg();renderCart();renderSvc();renderCal();renderShow();renderRev();renderPrices();$("badgeT").textContent=T[L].bdg;
-  if(!$("bok").hidden)$("bok").innerHTML=T[L].ok;
+  if(!$("bok").hidden)$("bok").innerHTML=T[L][$("bok").dataset.k||"ok"].replace("{wa}",BWA);$("onote").hidden=true;
 }
 $("lTR").onclick=()=>{L="tr";applyLang();};$("lEN").onclick=()=>{L="en";applyLang();};
 
 applyLang();
+RA.loadSettings().then(renderCal);
 </script>
 </body>
 </html>
